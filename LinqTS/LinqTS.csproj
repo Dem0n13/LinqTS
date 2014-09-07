@@ -20,10 +20,12 @@
   <ItemGroup>
     <Content Include="tests.html" />
     <Content Include="web.config" />
+    <TypeScriptCompile Include="reflection.ts" />
     <TypeScriptCompile Include="Tests\enumerators-tests.ts" />
     <TypeScriptCompile Include="linq.ts" />
     <TypeScriptCompile Include="Tests\linq-tests.ts" />
     <TypeScriptCompile Include="Tests\test-mocks.ts" />
+    <TypeScriptCompile Include="Tests\reflection-tests.ts" />
     <TypeScriptCompile Include="_references.ts" />
     <TypeScriptCompile Include="Tests\utils-tests.ts" />
     <TypeScriptCompile Include="utils.ts" />

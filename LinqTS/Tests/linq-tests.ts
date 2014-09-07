@@ -106,15 +106,15 @@
         var array: any[] = [s, S, 1, null, undefined, d];
         var enumerable = new Linq.EnumerableArray(array);
 
-        var actual: any[] = enumerable.ofType(String).toArray();
+        var actual: any[] = enumerable.ofType(typeOf.String).toArray();
         var expected: any[] = [s, S];
         propEqual(actual, expected);
 
-        var actual: any[] = enumerable.ofType(String, IsMode.Primitives).toArray();
-        var expected: any[] = [s];
+        actual = enumerable.ofType(typeOf.string, true).toArray();
+        expected = [s];
         propEqual(actual, expected);
 
-        actual = enumerable.ofType(Base).toArray();
+        actual = enumerable.ofType(typeOf(Base)).toArray();
         expected = [d];
         propEqual(actual, expected);
     });
@@ -123,24 +123,20 @@
         var array = ["Hello", new String("Hello"), "Hi", 1];
         var enumerable = new Linq.EnumerableArray(array);
 
-        throws(() => enumerable.cast<String>(String).toArray());
+        throws(() => enumerable.cast<String>(typeOf.String).toArray());
 
-        enumerable = enumerable.ofType(String);
+        enumerable = enumerable.ofType(typeOf.String);
 
-        var actual: any[] = enumerable.cast(String).toArray();
-        var expected: any[] = ["Hello", new String("Hello"), "Hi"];
+        var actual: any[] = enumerable.cast(typeOf.string).toArray();
+        var expected: any[] = ["Hello", "Hello", "Hi"];
         propEqual(actual, expected);
 
-        actual = enumerable.cast<string>(String, CastMode.ToPrivitives).toArray();
-        expected = ["Hello", "Hello", "Hi"];
-        propEqual(actual, expected);
-
-        actual = enumerable.cast(String, CastMode.ToObjects).toArray();
+        actual = enumerable.cast(typeOf.String).toArray();
         expected = [new String("Hello"), new String("Hello"), new String("Hi")];
         propEqual(actual, expected);
 
         array = [new Derived()];
         enumerable = new Linq.EnumerableArray(array);
-        throws(() => enumerable.cast(Derived, CastMode.ToPrivitives).toArray());
+        throws(() => enumerable.cast(typeOf.string).toArray());
     });
 }

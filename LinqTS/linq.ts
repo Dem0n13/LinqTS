@@ -75,19 +75,19 @@
             }));
         }
 
-        cast<U>(ctor: Constructor<any>, mode: CastMode = CastMode.Inherit): Enumerable<U> {
+        cast<U>(type: IType<U>, strict: boolean = false): Enumerable<U> {
             return new Enumerable(proxy(this._enumerator, {
                 getCurrent: function () {
-                    var object = this.getCurrent();
-                    return cast<U>(object, ctor, mode);
+                    var item = this.getCurrent();
+                    return cast<U>(item, type, strict);
                 },
                 reset: function() { this.reset(); },
                 moveNext: function() { return this.moveNext(); }
             }));
         }
 
-        ofType<U>(ctor: Constructor<U>, mode: IsMode = IsMode.All): Enumerable<U> {
-            return <any>this.where(item => is(item, ctor, mode));
+        ofType<U>(type: IType<U>, strict: boolean = false): Enumerable<U> {
+            return <any>this.where(item => is(item, type, strict));
         }
 
         any(predicate: (item: T) => boolean): boolean {

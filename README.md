@@ -24,8 +24,8 @@ console.log(enumerable.count()); // 1
 * `take(count: number): Enumerable<T>`
 * `skip(count: number): Enumerable<T>`
 * `select<U>(selector: (item: T) => U): Enumerable<U>`
-* `cast<U>(ctor: Constructor<any>, mode: CastMode = CastMode.Inherit): Enumerable<U>`
-* `ofType<U>(ctor: Constructor<U>, mode: IsMode = IsMode.All): Enumerable<U>`
+* `cast<U>(type: IType<U>, strict: boolean = false): Enumerable<U>`
+* `ofType<U>(type: IType<U>, strict: boolean = false): Enumerable<U>`
 * `any(predicate: (item: T) => boolean): boolean`
 * `all(predicate: (item: T) => boolean): boolean`
 * `toArray(): T[]`
