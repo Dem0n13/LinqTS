@@ -20,6 +20,26 @@
             return this._enumerator;
         }
 
+        all(predicate: (item: T) => boolean): boolean {
+            this._enumerator.reset();
+            while (this._enumerator.moveNext()) {
+                if (!predicate(this._enumerator.getCurrent())) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        any(predicate: (item: T) => boolean): boolean {
+            this._enumerator.reset();
+            while (this._enumerator.moveNext()) {
+                if (predicate(this._enumerator.getCurrent())) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         average(selector: (item: T) => number): number {
             this._enumerator.reset();
             var sum = 0;
@@ -30,6 +50,17 @@
                 count++;
             }
             return sum / count;
+        }
+
+        cast<U>(type: IType<U>, strict: boolean = false): Enumerable<U> {
+            return new Enumerable(proxy(this._enumerator, {
+                getCurrent: function () {
+                    var item = this.getCurrent();
+                    return cast<U>(item, type, strict);
+                },
+                reset: function () { this.reset(); },
+                moveNext: function () { return this.moveNext(); }
+            }));
         }
 
         concat(secondEnumerable: Enumerable<T>): Enumerable<T> {
@@ -49,6 +80,15 @@
                     );
                 }
             });
+        }
+
+        count(): number {
+            var result = 0;
+            this._enumerator.reset();
+            while (this._enumerator.moveNext()) {
+                result++;
+            }
+            return result;
         }
 
         defaultIfEmpty(defaultValue: T = null): Enumerable<T> {
@@ -152,45 +192,24 @@
             return result;
         }
 
-        where(predicate: (item: T) => boolean): Enumerable<T> {
-            return new Enumerable(wrap(this._enumerator, {
-                moveNext: function () {
-                    while (this.moveNext()) {
-                        if (predicate(this.getCurrent())) {
-                            return true;
-                        }
-                    }
-                    return false;
-                }
-            }));
+        ofType<U>(type: IType<U>, strict: boolean = false): Enumerable<U> {
+            return <any>this.where(item => is(item, type, strict));
         }
 
-        take(count: number): Enumerable<T> {
-            var currentCount: number;
+        select<U>(selector: (item: T) => U): Enumerable<U> {
             return new Enumerable(wrap(this._enumerator, {
-                reset: function() {
-                    currentCount = 0;
-                    this.reset();
-                },
-                moveNext: function() {
-                    if (currentCount < count && this.moveNext()) {
-                        currentCount++;
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
+                getCurrent: function () { return selector(this.getCurrent()); }
             }));
         }
 
         skip(count: number): Enumerable<T> {
             var currentCount: number;
             return new Enumerable(wrap(this._enumerator, {
-                reset: function() {
+                reset: function () {
                     currentCount = 0;
                     this.reset();
                 },
-                moveNext: function() {
+                moveNext: function () {
                     while (this.moveNext()) {
                         if (currentCount >= count)
                             return true;
@@ -198,12 +217,6 @@
                     }
                     return false;
                 }
-            }));
-        }
-
-        select<U>(selector: (item: T) => U): Enumerable<U> {
-            return new Enumerable(wrap(this._enumerator, {
-                getCurrent: function() { return selector(this.getCurrent()); }
             }));
         }
 
@@ -217,39 +230,22 @@
             return sum;
         }
 
-        cast<U>(type: IType<U>, strict: boolean = false): Enumerable<U> {
-            return new Enumerable(proxy(this._enumerator, {
-                getCurrent: function () {
-                    var item = this.getCurrent();
-                    return cast<U>(item, type, strict);
+        take(count: number): Enumerable<T> {
+            var currentCount: number;
+            return new Enumerable(wrap(this._enumerator, {
+                reset: function () {
+                    currentCount = 0;
+                    this.reset();
                 },
-                reset: function() { this.reset(); },
-                moveNext: function() { return this.moveNext(); }
+                moveNext: function () {
+                    if (currentCount < count && this.moveNext()) {
+                        currentCount++;
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
             }));
-        }
-
-        ofType<U>(type: IType<U>, strict: boolean = false): Enumerable<U> {
-            return <any>this.where(item => is(item, type, strict));
-        }
-
-        any(predicate: (item: T) => boolean): boolean {
-            this._enumerator.reset();
-            while (this._enumerator.moveNext()) {
-                if (predicate(this._enumerator.getCurrent())) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        all(predicate: (item: T) => boolean): boolean {
-            this._enumerator.reset();
-            while (this._enumerator.moveNext()) {
-                if (!predicate(this._enumerator.getCurrent())) {
-                    return false;
-                }
-            }
-            return true;
         }
 
         toArray(): T[] {
@@ -261,13 +257,17 @@
             return result;
         }
 
-        count(): number {
-            var result = 0;
-            this._enumerator.reset();
-            while (this._enumerator.moveNext()) {
-                result++;
-            }
-            return result;
+        where(predicate: (item: T) => boolean): Enumerable<T> {
+            return new Enumerable(wrap(this._enumerator, {
+                moveNext: function () {
+                    while (this.moveNext()) {
+                        if (predicate(this.getCurrent())) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+            }));
         }
     }
 

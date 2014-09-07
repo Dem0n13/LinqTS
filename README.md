@@ -20,8 +20,12 @@ console.log(enumerable.count()); // 1
 ```
 
 ## Supported methods (`Enumerable<T>`)
+* `all(predicate: (item: T) => boolean): boolean`
+* `any(predicate: (item: T) => boolean): boolean`
 * `average(selector: (item: T) => number): number`
+* `cast<U>(type: IType<U>, strict: boolean = false): Enumerable<U>`
 * `concat(secondEnumerable: Enumerable<T>): Enumerable<T>`
+* `count(): number`
 * `defaultIfEmpty(defaultValue: T = null): Enumerable<T>`
 * `elementAt(index: number): T`
 * `elementAtOrDefault(index: number, defaultValue: T = null): T`
@@ -30,14 +34,10 @@ console.log(enumerable.count()); // 1
 * `firstOrDefault(predicate: (item: T) => boolean = () => true, defaultValue: T = null): T`
 * `last(predicate: (item: T) => boolean = () => true): T`
 * `lastOrDefault(predicate: (item: T) => boolean = () => true, defaultValue: T = null): T`
-* `where(predicate: (item: T) => boolean): Enumerable<T>`
-* `take(count: number): Enumerable<T>`
-* `skip(count: number): Enumerable<T>`
-* `select<U>(selector: (item: T) => U): Enumerable<U>`
-* `sum(selector: (item: T) => number): number`
-* `cast<U>(type: IType<U>, strict: boolean = false): Enumerable<U>`
 * `ofType<U>(type: IType<U>, strict: boolean = false): Enumerable<U>`
-* `any(predicate: (item: T) => boolean): boolean`
-* `all(predicate: (item: T) => boolean): boolean`
+* `select<U>(selector: (item: T) => U): Enumerable<U>`
+* `skip(count: number): Enumerable<T>`
+* `sum(selector: (item: T) => number): number`
+* `take(count: number): Enumerable<T>`
 * `toArray(): T[]`
-* `count(): number`
+* `where(predicate: (item: T) => boolean): Enumerable<T>`
