@@ -1,6 +1,146 @@
 ﻿module Linq.Tests {
     QUnit.module("Linq");
 
+    test("Average", () => {
+        var array = [0, 1, 2];
+        var enumerable = new EnumerableArray(array);
+        
+        var actual = enumerable.average(item => item);
+        var expected = 1;
+        strictEqual(actual, expected);
+    });
+
+    test("Concat", () => {
+        var array0 = [0, 1, 2],
+            array1 = [2, 1, 0];
+        var enumerable0 = new EnumerableArray(array0),
+            enumerable1 = new EnumerableArray(array1);
+
+        var actual = enumerable0.concat(enumerable1).toArray();
+        var expected = [0, 1, 2, 2, 1, 0];
+        propEqual(actual, expected);
+    });
+
+    test("DefaultIfEmpty", () => {
+        var array = [];
+        var enumerable = new EnumerableArray(array);
+
+        var actual = enumerable.defaultIfEmpty().toArray();
+        var expected = [null];
+        propEqual(actual, expected);
+
+        array.push(2);
+
+        actual = enumerable.defaultIfEmpty().toArray();
+        expected = [2];
+        propEqual(actual, expected);
+    });
+
+    test("ElementAt", () => {
+        var array = [0, 1, 2];
+        var enumerable = new EnumerableArray(array);
+
+        var actual = enumerable.elementAt(2);
+        var expected = 2;
+        strictEqual(actual, expected);
+
+        throws(() => enumerable.elementAt(-1));
+        throws(() => enumerable.elementAt(3));
+    });
+
+    test("ElementAtOrDefault", () => {
+        var array = [0, 1, 2];
+        var enumerable = new EnumerableArray(array);
+
+        var actual = enumerable.elementAtOrDefault(2);
+        var expected = 2;
+        strictEqual(actual, expected);
+
+        actual = enumerable.elementAtOrDefault(3);
+        expected = null;
+        strictEqual(actual, expected);
+
+        actual = enumerable.elementAtOrDefault(-1);
+        expected = null;
+        strictEqual(actual, expected);
+    });
+
+    test("Empty", () => {
+        var actual = Enumerable.empty<string>().toArray();
+        var expected = [];
+        propEqual(actual, expected);
+    });
+
+    test("First", () => {
+        var array: number[] = [];
+        var enumerable = new EnumerableArray(array);
+
+        throws(() => enumerable.first());
+
+        array.push(0);
+        array.push(1);
+
+        var actual = enumerable.first();
+        var expected = 0;
+        strictEqual(actual, expected);
+        throws(() => enumerable.first(item => item > 1));
+    });
+
+    test("FirstOrDefault", () => {
+        var array: number[] = [];
+        var enumerable = new EnumerableArray(array);
+
+        var actual = enumerable.firstOrDefault();
+        var expected = null;
+        strictEqual(actual, expected);
+
+        array.push(0);
+        array.push(1);
+
+        actual = enumerable.firstOrDefault();
+        expected = 0;
+        strictEqual(actual, expected);
+
+        actual = enumerable.firstOrDefault(item => item > 1, 42);
+        expected = 42;
+        strictEqual(actual, expected);
+    });
+
+    test("Last", () => {
+        var array: number[] = [];
+        var enumerable = new EnumerableArray(array);
+
+        throws(() => enumerable.last());
+
+        array.push(0);
+        array.push(1);
+
+        var actual = enumerable.last();
+        var expected = 1;
+        strictEqual(actual, expected);
+        throws(() => enumerable.last(item => item > 1));
+    });
+
+    test("LastOrDefault", () => {
+        var array: number[] = [];
+        var enumerable = new EnumerableArray(array);
+
+        var actual = enumerable.lastOrDefault();
+        var expected = null;
+        strictEqual(actual, expected);
+
+        array.push(0);
+        array.push(1);
+
+        actual = enumerable.lastOrDefault();
+        expected = 1;
+        strictEqual(actual, expected);
+
+        actual = enumerable.lastOrDefault(item => item > 1, 42);
+        expected = 42;
+        strictEqual(actual, expected);
+    });
+
     test("ToArray", () => {
         var array = [0, 1, 2];
 
@@ -81,6 +221,14 @@
         var actual = enumerable.select(item => item.val).toArray();
         var expected = [0, 1, 2];
         propEqual(actual, expected);
+    });
+
+    test("Sum", () => {
+        var array = [0, 1, 2];
+        var enumerable = new EnumerableArray(array);
+
+        var average = enumerable.sum(item => item);
+        strictEqual(average, 3);
     });
 
     test("Any", () => {

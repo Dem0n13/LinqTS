@@ -20,6 +20,138 @@
             return this._enumerator;
         }
 
+        average(selector: (item: T) => number): number {
+            this._enumerator.reset();
+            var sum = 0;
+            var count = 0;
+            while (this._enumerator.moveNext()) {
+                var item = this._enumerator.getCurrent();
+                sum += selector(item);
+                count++;
+            }
+            return sum / count;
+        }
+
+        concat(secondEnumerable: Enumerable<T>): Enumerable<T> {
+            var first = this._enumerator,
+                second = secondEnumerable.getEnumerator(),
+                current = first;
+            return new Enumerable({
+                getCurrent: () => current.getCurrent(),
+                reset: () => {
+                    first.reset();
+                    second.reset();
+                    current = first;
+                },
+                moveNext: () => {
+                    return current.moveNext() || (
+                        current = second, current.moveNext()
+                    );
+                }
+            });
+        }
+
+        defaultIfEmpty(defaultValue: T = null): Enumerable<T> {
+            var isEmpty: boolean = undefined;
+            return new Enumerable(wrap(this._enumerator, {
+                getCurrent: function() {
+                    return isEmpty ? defaultValue : this.getCurrent();
+                },
+                reset: function() {
+                    isEmpty = undefined;
+                    this.reset();
+                },
+                moveNext: function() {
+                    switch (isEmpty) {
+                        case false:
+                            return this.moveNext();
+                        case true:
+                            return false;
+                        default:
+                            isEmpty = !this.moveNext();
+                            return true;
+                    }
+                }
+            }));
+        }
+
+        elementAt(index: number): T {
+            if (index < 0)
+                throw "ArgumentOutOfRangeException";
+            this._enumerator.reset();
+            for (var i = 0; i <= index; i++) {
+                if (!this._enumerator.moveNext())
+                    throw "ArgumentOutOfRangeException";
+            }
+            return this._enumerator.getCurrent();
+        }
+
+        elementAtOrDefault(index: number, defaultValue: T = null): T {
+            if (index < 0)
+                return defaultValue;
+            this._enumerator.reset();
+            for (var i = 0; i <= index; i++) {
+                if (!this._enumerator.moveNext())
+                    return defaultValue;
+            }
+            return this._enumerator.getCurrent();
+        }
+
+        static empty<T>(): Enumerable<T> {
+            return new Enumerable({
+                getCurrent: (): T => { throw "Enumerator is in a reset state"; },
+                reset: () => {},
+                moveNext: () => false
+            });
+        }
+
+        first(predicate: (item: T) => boolean = () => true): T {
+            this._enumerator.reset();
+            while (this._enumerator.moveNext()) {
+                if (predicate(this._enumerator.getCurrent())) {
+                    return this._enumerator.getCurrent();
+                }
+            }
+            throw "InvalidOperationException";
+        }
+        
+        firstOrDefault(predicate: (item: T) => boolean = () => true, defaultValue: T = null): T {
+            this._enumerator.reset();
+            while (this._enumerator.moveNext()) {
+                if (predicate(this._enumerator.getCurrent())) {
+                    return this._enumerator.getCurrent();
+                }
+            }
+            return defaultValue;
+        }
+
+        last(predicate: (item: T) => boolean = () => true): T {
+            this._enumerator.reset();
+            var result: T;
+            var isFound = false;
+            while (this._enumerator.moveNext()) {
+                if (predicate(this._enumerator.getCurrent())) {
+                    isFound = true;
+                    result = this._enumerator.getCurrent();
+                }
+            }
+            if (isFound)
+                return result;
+            else
+                throw "InvalidOperationException";
+        }
+
+        lastOrDefault(predicate: (item: T) => boolean = () => true, defaultValue: T = null): T {
+            this._enumerator.reset();
+            var result: T = defaultValue;
+            while (this._enumerator.moveNext()) {
+                if (predicate(this._enumerator.getCurrent())) {
+                    result = this._enumerator.getCurrent();
+                }
+            }
+            return result;
+        }
+
         where(predicate: (item: T) => boolean): Enumerable<T> {
             return new Enumerable(wrap(this._enumerator, {
                 moveNext: function () {
@@ -73,6 +205,16 @@
             return new Enumerable(wrap(this._enumerator, {
                 getCurrent: function() { return selector(this.getCurrent()); }
             }));
+        }
+
+        sum(selector: (item: T) => number): number {
+            this._enumerator.reset();
+            var sum = 0;
+            while (this._enumerator.moveNext()) {
+                var item = this._enumerator.getCurrent();
+                sum += selector(item);
+            }
+            return sum;
         }
 
         cast<U>(type: IType<U>, strict: boolean = false): Enumerable<U> {

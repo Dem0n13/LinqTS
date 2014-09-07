@@ -13,10 +13,10 @@
     export interface IType<T> {
         name: string;
         group: TypeGroup;
-        ctor: IConstructor<any>
+        ctor: IConstructor<any>;
     }
 
-    export var typeOf: {
+    export interface ITypeOf {
         <T>(ctor: IConstructor<T>): IType<T>;
         boolean: IType<boolean>;
         number: IType<number>;
@@ -27,8 +27,10 @@
         Function: IType<Function>;
         Array: IType<Array<any>>;
         Object: IType<Object>;
-    } = (() => {
-        var _: any = <T>(ctor: IConstructor<T>): IType<T> => {
+    }
+
+    export var typeOf: ITypeOf = (() => {
+        var _: ITypeOf = <any>(<T>(ctor: IConstructor<T>): IType<T> => {
             if (ctor == null)
                 throw "";
 
@@ -40,7 +42,7 @@
                 group: TypeGroup.Reference,
                 ctor: ctor
             };
-        };
+        });
 
         // known types
         // primitive
