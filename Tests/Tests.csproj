@@ -3,7 +3,7 @@
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <ProjectGuid>{4BC4338A-0415-4577-9AB2-6BD70D4B2FD2}</ProjectGuid>
+    <ProjectGuid>{CEEC2A6C-823B-42C6-B10D-36032549129F}</ProjectGuid>
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <OutputPath>bin</OutputPath>
@@ -18,16 +18,37 @@
     <IISExpressUseClassicPipelineMode />
   </PropertyGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="reflection.ts" />
-    <TypeScriptCompile Include="linq.ts" />
-    <TypeScriptCompile Include="_references.ts" />
-    <TypeScriptCompile Include="utils.ts" />
+    <Content Include="..\LinqTS\linq.js">
+      <Link>links\linq.js</Link>
+      <BrowseToURL>~/linq.js</BrowseToURL>
+    </Content>
+    <Content Include="index.html" />
+    <Content Include="web.config" />
   </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="..\LinqTS\linq.d.ts">
+      <Link>links\linq.d.ts</Link>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="enumerators-tests.ts" />
+    <TypeScriptCompile Include="lib\qunit.d.ts" />
+    <TypeScriptCompile Include="linq-tests.ts" />
+    <TypeScriptCompile Include="reflection-tests.ts" />
+    <TypeScriptCompile Include="test-mocks.ts" />
+    <TypeScriptCompile Include="utils-tests.ts" />
+    <TypeScriptCompile Include="_references.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LinqTS\LinqTS.csproj">
+      <Project>{4bc4338a-0415-4577-9ab2-6bd70d4b2fd2}</Project>
+      <Name>LinqTS</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>
   </PropertyGroup>
   <PropertyGroup>
-    <RootNamespace>LinqTS</RootNamespace>
+    <RootNamespace>Tests</RootNamespace>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\WebApplications\Microsoft.WebApplication.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\WebApplications\Microsoft.WebApplication.targets')" />
@@ -37,9 +58,9 @@
         <WebProjectProperties>
           <UseIIS>True</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>11314</DevelopmentServerPort>
+          <DevelopmentServerPort>53886</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:11314/</IISUrl>
+          <IISUrl>http://localhost:53886/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>
@@ -52,12 +73,28 @@
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <TypeScriptRemoveComments>false</TypeScriptRemoveComments>
     <TypeScriptSourceMap>true</TypeScriptSourceMap>
-    <TypeScriptGeneratesDeclarations>True</TypeScriptGeneratesDeclarations>
-    <TypeScriptOutFile>linq.js</TypeScriptOutFile>
+    <TypeScriptOutFile>tests.js</TypeScriptOutFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <TypeScriptRemoveComments>true</TypeScriptRemoveComments>
     <TypeScriptSourceMap>false</TypeScriptSourceMap>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
+  <!-- Copy linked files -->
+  <Target Name="_CopyLinkedContentFiles">
+    <!-- Remove any old copies of the files -->
+    <Delete Condition=" '%(Content.Link)' != '' AND Exists('$(WebProjectOutputDir)\%(Content.Link)') " Files="$(WebProjectOutputDir)\%(Content.Link)" />
+    <!-- Copy linked content files recursively to the project folder -->
+    <Copy Condition=" '%(Content.Link)' != '' " SourceFiles="%(Content.Identity)" DestinationFiles="$(WebProjectOutputDir)\%(Content.Link)" />
+  </Target>
+  <!-- Override the default target dependencies to -->
+  <!-- include the new _CopyLinkedContentFiles target. -->
+  <PropertyGroup>
+    <PrepareForRunDependsOn>
+      $(PrepareForRunDependsOn);
+      _CopyWebApplication;
+      _CopyLinkedContentFiles;
+      _BuiltWebOutputGroupOutput
+    </PrepareForRunDependsOn>
+  </PropertyGroup>
 </Project>

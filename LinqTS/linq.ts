@@ -40,7 +40,7 @@
             return false;
         }
 
-        average(selector: (item: T) => number): number {
+        average1(selector: (item: T) => number): number {
             this._enumerator.reset();
             var sum = 0;
             var count = 0;

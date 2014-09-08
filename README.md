@@ -1,7 +1,7 @@
 LinqTS
 ======
 Native LINQ for Typesctipt <br/>
-Version: alpha-2014-09-05 <br/>
+Version: alpha-0.21 <br/>
 License: MIT License
 
 ## Features

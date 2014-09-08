@@ -3,7 +3,7 @@
 
     test("All", () => {
         var array = [0, 1, 2];
-        var enumerable = new Linq.EnumerableArray(array);
+        var enumerable = new EnumerableArray(array);
 
         ok(enumerable.all(item => item > -1));
         ok(!enumerable.all(item => item > 0));
@@ -11,7 +11,7 @@
 
     test("Any", () => {
         var array = [0, 1, 2];
-        var enumerable = new Linq.EnumerableArray(array);
+        var enumerable = new EnumerableArray(array);
 
         ok(enumerable.any(item => item > 1));
         ok(!enumerable.any(item => item > 2));
@@ -21,7 +21,7 @@
         var array = [0, 1, 2];
         var enumerable = new EnumerableArray(array);
         
-        var actual = enumerable.average(item => item);
+        var actual = enumerable.average1(item => item);
         var expected = 1;
         strictEqual(actual, expected);
     });
