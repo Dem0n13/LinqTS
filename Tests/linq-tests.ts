@@ -18,10 +18,14 @@
     });
 
     test("Average", () => {
-        var array = [0, 1, 2];
+        var array = [];
         var enumerable = new EnumerableArray(array);
+
+        throws(() => enumerable.average(item => item));
+
+        array.push(0, 1, 2);
         
-        var actual = enumerable.average1(item => item);
+        var actual = enumerable.average(item => item);
         var expected = 1;
         strictEqual(actual, expected);
     });
@@ -193,6 +197,32 @@
 
         actual = enumerable.lastOrDefault(item => item > 1, 42);
         expected = 42;
+        strictEqual(actual, expected);
+    });
+
+    test("Max", () => {
+        var array: number[] = [];
+        var enumerable = new EnumerableArray(array);
+
+        throws(() => enumerable.max(item => item));
+
+        array.push(0, 1, -1);
+
+        var actual = enumerable.max(item => item);
+        var expected = 1;
+        strictEqual(actual, expected);
+    });
+
+    test("Min", () => {
+        var array: number[] = [];
+        var enumerable = new EnumerableArray(array);
+
+        throws(() => enumerable.min(item => item));
+
+        array.push(0, 1, -1);
+
+        var actual = enumerable.min(item => item);
+        var expected = -1;
         strictEqual(actual, expected);
     });
 

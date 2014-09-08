@@ -18,17 +18,9 @@
     <IISExpressUseClassicPipelineMode />
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="..\LinqTS\linq.js">
-      <Link>links\linq.js</Link>
-      <BrowseToURL>~/linq.js</BrowseToURL>
-    </Content>
     <Content Include="index.html" />
     <Content Include="web.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <TypeScriptCompile Include="..\LinqTS\linq.d.ts">
-      <Link>links\linq.d.ts</Link>
-    </TypeScriptCompile>
+    <TypeScriptCompile Include="links\linq.d.ts" />
     <TypeScriptCompile Include="enumerators-tests.ts" />
     <TypeScriptCompile Include="lib\qunit.d.ts" />
     <TypeScriptCompile Include="linq-tests.ts" />
@@ -73,28 +65,10 @@
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <TypeScriptRemoveComments>false</TypeScriptRemoveComments>
     <TypeScriptSourceMap>true</TypeScriptSourceMap>
-    <TypeScriptOutFile>tests.js</TypeScriptOutFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <TypeScriptRemoveComments>true</TypeScriptRemoveComments>
     <TypeScriptSourceMap>false</TypeScriptSourceMap>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
-  <!-- Copy linked files -->
-  <Target Name="_CopyLinkedContentFiles">
-    <!-- Remove any old copies of the files -->
-    <Delete Condition=" '%(Content.Link)' != '' AND Exists('$(WebProjectOutputDir)\%(Content.Link)') " Files="$(WebProjectOutputDir)\%(Content.Link)" />
-    <!-- Copy linked content files recursively to the project folder -->
-    <Copy Condition=" '%(Content.Link)' != '' " SourceFiles="%(Content.Identity)" DestinationFiles="$(WebProjectOutputDir)\%(Content.Link)" />
-  </Target>
-  <!-- Override the default target dependencies to -->
-  <!-- include the new _CopyLinkedContentFiles target. -->
-  <PropertyGroup>
-    <PrepareForRunDependsOn>
-      $(PrepareForRunDependsOn);
-      _CopyWebApplication;
-      _CopyLinkedContentFiles;
-      _BuiltWebOutputGroupOutput
-    </PrepareForRunDependsOn>
-  </PropertyGroup>
 </Project>

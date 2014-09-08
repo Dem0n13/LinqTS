@@ -40,10 +40,14 @@
             return false;
         }
 
-        average1(selector: (item: T) => number): number {
+        average(selector: (item: T) => number): number {
             this._enumerator.reset();
-            var sum = 0;
-            var count = 0;
+            if (!this._enumerator.moveNext()) {
+                throw "InvalidOperationException";
+            }
+
+            var sum = selector(this._enumerator.getCurrent());
+            var count = 1;
             while (this._enumerator.moveNext()) {
                 var item = this._enumerator.getCurrent();
                 sum += selector(item);
@@ -190,6 +194,34 @@
                 }
             }
             return result;
+        }
+
+        max(selector: (item: T) => number): number {
+            this._enumerator.reset();
+            if (!this._enumerator.moveNext()) {
+                throw "InvalidOperationException";
+            }
+            var max = selector(this._enumerator.getCurrent());
+            while (this._enumerator.moveNext()) {
+                var item = selector(this._enumerator.getCurrent());
+                if (item > max)
+                    max = item;
+            }
+            return max;
+        }
+
+        min(selector: (item: T) => number): number {
+            this._enumerator.reset();
+            if (!this._enumerator.moveNext()) {
+                throw "InvalidOperationException";
+            }
+            var min = selector(this._enumerator.getCurrent());
+            while (this._enumerator.moveNext()) {
+                var item = selector(this._enumerator.getCurrent());
+                if (item < min)
+                    min = item;
+            }
+            return min;
         }
 
         ofType<U>(type: IType<U>, strict: boolean = false): Enumerable<U> {
