@@ -228,24 +228,96 @@
             return <any>this.where(item => is(item, type, strict));
         }
 
+        static range(start: number, count: number): Enumerable<number> {
+            var currentIndex = -1;
+            return new Enumerable({
+                getCurrent: (): number => {
+                    if (currentIndex === -1)
+                        throw "Enumerator is in a reset state";
+                    return start + currentIndex;
+                },
+                reset: () => {
+                    currentIndex = -1;
+                },
+                moveNext: (): boolean => {
+                    return currentIndex + 1 < count ? (currentIndex++, true) : false;
+                }
+            });
+        }
+
+        static repeat<T>(element: T, count: number): Enumerable<T> {
+            var currentIndex = -1;
+            return new Enumerable({
+                getCurrent: (): T => {
+                    if (currentIndex === -1)
+                        throw "Enumerator is in a reset state";
+                    return element;
+                },
+                reset: () => {
+                    currentIndex = -1;
+                },
+                moveNext: (): boolean => {
+                    return currentIndex + 1 < count ? (currentIndex++, true) : false;
+                }
+            });
+        }
+
         select<U>(selector: (item: T) => U): Enumerable<U> {
             return new Enumerable(wrap(this._enumerator, {
                 getCurrent: function () { return selector(this.getCurrent()); }
             }));
         }
 
+        sequenceEqual(secondEnumerable: Enumerable<T>): boolean {
+            var first = this._enumerator,
+                second = secondEnumerable._enumerator;
+            first.reset(), second.reset();
+            var firstMoved = first.moveNext(),
+                secondMoved = second.moveNext();
+            while (firstMoved && secondMoved) {
+                var firstItem = first.getCurrent(),
+                    secondItem = second.getCurrent();
+                if (firstItem !== secondItem)
+                    return false;
+                firstMoved = first.moveNext(), secondMoved = second.moveNext();
+            }
+
+            return firstMoved === secondMoved;
+        }
+
         skip(count: number): Enumerable<T> {
             var currentCount: number;
             return new Enumerable(wrap(this._enumerator, {
-                reset: function () {
-                    currentCount = 0;
+                reset: function() {
                     this.reset();
+                    currentCount = 0;
                 },
-                moveNext: function () {
+                moveNext: function(): boolean {
                     while (this.moveNext()) {
                         if (currentCount >= count)
                             return true;
                         currentCount++;
+                    }
+                    return false;
+                }
+            }));
+        }
+
+        skipWhile(predicate: (item: T) => boolean): Enumerable<T> {
+            var skipped = false;
+            return new Enumerable(wrap(this._enumerator, {
+                reset: function() {
+                    this.reset();
+                    skipped = false;
+                },
+                moveNext: function(): boolean {
+                    while (this.moveNext()) {
+                        if (skipped)
+                            return true;
+                        if (!predicate(this.getCurrent())) {
+                            skipped = true;
+                            return true;
+                        }
                     }
                     return false;
                 }
@@ -276,6 +348,22 @@
                     } else {
                         return false;
                     }
+                }
+            }));
+        }
+
+        takeWhile(predicate: (item: T) => boolean): Enumerable<T> {
+            var take = true;
+            return new Enumerable(wrap(this._enumerator, {
+                reset: function() {
+                    this.reset();
+                    take = true;
+                },
+                moveNext: function(): boolean {
+                    while (take && this.moveNext()) {
+                        return predicate(this.getCurrent()) || (take = false);
+                    }
+                    return false;
                 }
             }));
         }

@@ -246,6 +246,22 @@
         propEqual(actual, expected);
     });
 
+    test("Range", () => {
+        var enumerable = Enumerable.range(5, 5);
+
+        var actual = enumerable.toArray();
+        var expected = [5, 6, 7, 8, 9];
+        propEqual(actual, expected);
+    });
+
+    test("Repeat", () => {
+        var enumerable = Enumerable.repeat("hi", 3);
+
+        var actual = enumerable.toArray();
+        var expected = ["hi", "hi", "hi"];
+        propEqual(actual, expected);
+    });
+
     test("Select", () => {
         var array: { val: number }[] = [{ val: 0 }, { val: 1 }, { val: 2 }];
         var enumerable = new Linq.EnumerableArray(array);
@@ -253,6 +269,22 @@
         var actual = enumerable.select(item => item.val).toArray();
         var expected = [0, 1, 2];
         propEqual(actual, expected);
+    });
+
+    test("SequenceEqual", () => {
+        var array1 = [1, 2, 3];
+        var array2 = [1];
+
+        var enumerable1 = new EnumerableArray(array1);
+        var enumerable2 = new EnumerableArray(array2);
+
+        var actual = enumerable1.sequenceEqual(enumerable2);
+        ok(!actual);
+
+        array2.push(2, 3);
+
+        actual = enumerable1.sequenceEqual(enumerable2);
+        ok(actual);
     });
 
     test("Skip", () => {
@@ -269,6 +301,15 @@
 
         actual = enumerable.skip(3).toArray();
         expected = [];
+        propEqual(actual, expected);
+    });
+
+    test("SkipWhile", () => {
+        var array = [0, 1, 2, 1, 0];
+        var enumerable = new Linq.EnumerableArray(array);
+
+        var actual = enumerable.skipWhile(item => item < 2).toArray();
+        var expected = [2, 1, 0];
         propEqual(actual, expected);
     });
 
@@ -290,6 +331,15 @@
 
         actual = enumerable.take(0).toArray();
         expected = [];
+        propEqual(actual, expected);
+    });
+
+    test("TakeWhile", () => {
+        var array = [0, 1, 2, 1, 0];
+        var enumerable = new Linq.EnumerableArray(array);
+
+        var actual = enumerable.takeWhile(item => item < 2).toArray();
+        var expected = [0, 1];
         propEqual(actual, expected);
     });
 

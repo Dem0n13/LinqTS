@@ -1,11 +1,11 @@
 LinqTS
 ======
 Native LINQ for Typesctipt <br/>
-Version: alpha-0.23 <br/>
+Version: alpha-0.28 <br/>
 License: MIT License
 
 ## Features
-* 23 LINQ methods
+* 28 LINQ methods
 * implemented IEnumerator for javasctipt Array and Object
 * maximum lazy evaluation
 * only Typesctipt (maximum type-safety)
@@ -37,9 +37,14 @@ console.log(enumerable.count()); // 1
 * `max(selector: (item: T) => number): number`
 * `min(selector: (item: T) => number): number`
 * `ofType<U>(type: IType<U>, strict: boolean = false): Enumerable<U>`
+* `range(start: number, count: number): Enumerable<number>`
+* `repeat<T>(element: T, count: number): Enumerable<T>`
 * `select<U>(selector: (item: T) => U): Enumerable<U>`
+* `sequenceEqual(secondEnumerable: Enumerable<T>): boolean`
 * `skip(count: number): Enumerable<T>`
+* `skipWhile(predicate: (item: T) => boolean): Enumerable<T>`
 * `sum(selector: (item: T) => number): number`
 * `take(count: number): Enumerable<T>`
+* `takeWhile(predicate: (item: T) => boolean): Enumerable<T>`
 * `toArray(): T[]`
 * `where(predicate: (item: T) => boolean): Enumerable<T>`
